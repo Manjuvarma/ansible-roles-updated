@@ -1,0 +1,52 @@
+---
+# tasks file for ansible
+   - name: Install nginx package
+     shell: sudo amazon-linux-extras install nginx1 -y
+     become: yes
+   - name: Install nginx
+     yum:
+       name: nginx
+       state: present
+   - name: start nginx
+     service:
+       name: nginx
+       state: started
+   - name: creating a directory
+     shell:
+       cmd: mkdir -p /tmp/assets-cache/
+       creates: /tmp/assets-cache/tmp
+   - name: shell commands
+     shell: mkdir -p /conf && touch /conf/nginx.conf
+   - name: copying nginx.conf file
+     become: yes
+   #  copy:
+     template:
+        src: nginx.conf
+        dest: /etc/nginx/nginx.conf
+   - name: copying fastcgi_params file
+     template:
+        src: fastcgi_params
+        dest: /etc/nginx/fastcgi_params
+   - name: copying nginx_vhost.conf file
+     template:
+        src: nginx_vhost.conf
+        dest: /etc/nginx/conf.d/default.conf
+   - name: copying logrotate file
+     template:
+        src: logrotate
+        dest: /etc/logrotate.d/nginx
+   - name: shell commands
+     shell: mkdir -p /opt/app && cd /opt/app
+
+   - name: copying start.sh file
+     template:
+        src: start.sh
+        dest: /
+   - name: copying start_celery_beat.sh file
+     template:
+        src: start_celery_beat.sh
+        dest: /
+   - name: copying start_celery_worker.sh file
+     template:
+        src: start_celery_worker.sh
+        dest: /
